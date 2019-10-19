@@ -31,7 +31,7 @@ class MessageSent extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -42,10 +42,21 @@ class MessageSent extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+        // return (new MailMessage)
+        //             ->greeting($notifiable->name . ",")
+        //             ->subject('Mensaje recibido desde tu sitio web')
+        //             ->line('Has recibido un mensaje.')
+        //             ->action('Click aquí para ver el mensaje', route('messages.show', $this->message->id))
+        //             ->line('Gracias por utilizar nuestra aplicación!');
+
+        return (new MailMessage)->view(
+            'emails.notification', [
+                'msg' => $this->message,
+                'user' => $notifiable
+            ]
+        )->subject('Mensaje recibido desde CenterPage');
+
+        // return (new CustomMail($message))->to($notifiable->email);
     }
 
     /**
